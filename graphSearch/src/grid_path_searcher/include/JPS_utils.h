@@ -24,6 +24,7 @@ struct JPS3DNeib {
 	// diagonal (norm sqrt(3)): 7 neighbors always added
 	//                          6 forced neighbors to check
 	//                          12 neighbors to add if forced
+	// nsz[][0]: number of neib, nsz[][1]: number of force neib
 	static constexpr int nsz[4][2] = {{26, 0}, {1, 8}, {3, 12}, {7, 12}};
 	JPS3DNeib();
 	private:

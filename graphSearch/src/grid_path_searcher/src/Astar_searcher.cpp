@@ -186,7 +186,7 @@ double AstarPathFinder::getHeu(GridNodePtr node1, GridNodePtr node2)
     choose possible heuristic function you want
     Manhattan, Euclidean, Diagonal, or 0 (Dijkstra)
     */
-    distanceTye D = distanceTye::Manhattan;
+    distanceTye D = distanceTye::Euclidean;
     double HeuristicValue;
     switch (D)
     {
@@ -270,11 +270,12 @@ void AstarPathFinder::AstarGraphSearch(Vector3d start_pt, Vector3d end_pt)
             continue;
         currentPtr->id = -1;
 
-        if (currentPtr == GridNodeMap[currentPtr->index[0]][currentPtr->index[1]][currentPtr->index[2]]){
-            ROS_INFO("Map == openSet");  // equal
-        } else{
-            ROS_INFO("Not equal!!!!");
-        }
+        // if (currentPtr == GridNodeMap[currentPtr->index[0]][currentPtr->index[1]][currentPtr->index[2]]){
+        //     ROS_INFO("Map == openSet");  // equal
+        // } else{
+        //     ROS_INFO("Not equal!!!!");
+        // }
+        ROS_INFO("GridNode dir: %d, %d, %d", currentPtr->dir[0], currentPtr->dir[1], currentPtr->dir[2]);
         
         // if the current node is the goal 
         if( currentPtr->index == goalIdx ){

@@ -18,7 +18,7 @@
 #include "JPS_searcher.h"
 #include "backward.hpp"
 
-#define _use_jps 0
+#define _use_jps 1
 
 using namespace std;
 using namespace Eigen;

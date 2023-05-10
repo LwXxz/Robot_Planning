@@ -12,6 +12,7 @@ inline void JPSPathFinder::JPSGetSucc(GridNodePtr currentPtr, vector<GridNodePtr
     int num_neib  = jn3d->nsz[norm1][0];
     int num_fneib = jn3d->nsz[norm1][1];
     int id = (currentPtr->dir(0) + 1) + 3 * (currentPtr->dir(1) + 1) + 9 * (currentPtr->dir(2) + 1);
+    Vector3d currentCoord = currentPtr->coord;
 
     for( int dev = 0; dev < num_neib + num_fneib; ++dev) {
         Vector3i neighborIdx;
@@ -26,11 +27,11 @@ inline void JPSPathFinder::JPSGetSucc(GridNodePtr currentPtr, vector<GridNodePtr
                 continue;
         }
         else {
-            int nx = currentPtr->index(0) + jn3d->f1[id][0][dev - num_neib];
-            int ny = currentPtr->index(1) + jn3d->f1[id][1][dev - num_neib];
-            int nz = currentPtr->index(2) + jn3d->f1[id][2][dev - num_neib];
+            int expand_x = currentPtr->index(0) + jn3d->f1[id][0][dev - num_neib];
+            int expand_y = currentPtr->index(1) + jn3d->f1[id][1][dev - num_neib];
+            int expand_z = currentPtr->index(2) + jn3d->f1[id][2][dev - num_neib];
             
-            if( isOccupied(nx, ny, nz) ) {
+            if( isOccupied(expand_x, expand_y, expand_z) ) {
                 expandDir(0) = jn3d->f2[id][0][dev - num_neib];
                 expandDir(1) = jn3d->f2[id][1][dev - num_neib];
                 expandDir(2) = jn3d->f2[id][2][dev - num_neib];
@@ -42,19 +43,21 @@ inline void JPSPathFinder::JPSGetSucc(GridNodePtr currentPtr, vector<GridNodePtr
                 continue;
         }
 
-        GridNodePtr nodePtr = GridNodeMap[neighborIdx(0)][neighborIdx(1)][neighborIdx(2)];
-        nodePtr->dir = expandDir;
+        GridNodePtr tempNode = GridNodeMap[neighborIdx(0)][neighborIdx(1)][neighborIdx(2)];
+        tempNode->dir = expandDir;
         
-        neighborPtrSets.push_back(nodePtr);
-        edgeCostSets.push_back(
-            sqrt(
-            (neighborIdx(0) - currentPtr->index(0)) * (neighborIdx(0) - currentPtr->index(0)) +
-            (neighborIdx(1) - currentPtr->index(1)) * (neighborIdx(1) - currentPtr->index(1)) +
-            (neighborIdx(2) - currentPtr->index(2)) * (neighborIdx(2) - currentPtr->index(2))   ) 
-            );
+        neighborPtrSets.push_back(tempNode);
+        double edgeCost = std::sqrt(pow(tempNode->coord(0) - currentCoord(0), 2) + pow(tempNode->coord(1) - currentCoord(1), 2) + pow(tempNode->coord(2) - currentCoord(2), 2));
+        edgeCostSets.push_back(edgeCost);
     }
 }
 
+/*
+recursion function to find out the jump point
+curIdx: now position index
+expDir: expand direction
+neiIdex: neighbor index
+*/
 bool JPSPathFinder::jump(const Vector3i & curIdx, const Vector3i & expDir, Vector3i & neiIdx)
 {
     neiIdx = curIdx + expDir;
@@ -62,9 +65,11 @@ bool JPSPathFinder::jump(const Vector3i & curIdx, const Vector3i & expDir, Vecto
     if( !isFree(neiIdx) )
         return false;
 
+    // could be the jump point, if the node is the goal.
     if( neiIdx == goalIdx )
         return true;
 
+    // if the node has force neighborhood, it could be the jump point.
     if( hasForced(neiIdx, expDir) )
         return true;
 
@@ -173,35 +178,26 @@ void JPSPathFinder::JPSGraphSearch(Eigen::Vector3d start_pt, Eigen::Vector3d end
 
     //put start node in open set
     startPtr -> gScore = 0;
-    startPtr -> fScore = getHeu(startPtr,endPtr);   
-    //STEP 1: finish the AstarPathFinder::getHeu , which is the heuristic function
+    startPtr -> fScore = getHeu(startPtr, endPtr);   
+
     startPtr -> id = 1; 
     startPtr -> coord = start_pt;
     openSet.insert( make_pair(startPtr -> fScore, startPtr) );
-    /*
-    *
-    STEP 2 :  some else preparatory works which should be done before while loop
-    please write your code below
-    *
-    *
-    */
-    double tentative_gScore;
+
+    GridNodeMap[start_idx(0)][start_idx(1)][start_idx(2)]->id = 1;
+
     vector<GridNodePtr> neighborPtrSets;
     vector<double> edgeCostSets;
 
     // this is the main loop
     while ( !openSet.empty() ){
-        /*
-        *
-        *
-        step 3: Remove the node with lowest cost function from open set to closed set
-        please write your code below
-        
-        IMPORTANT NOTE!!!
-        This part you should use the C++ STL: multimap, more details can be find in Homework description
-        *
-        *
-        */
+        currentPtr = openSet.begin() ->second;
+        openSet.erase(openSet.begin());
+        if (currentPtr->id == -1){
+            continue;
+        } else{
+            currentPtr->id = -1;
+        }
 
         // if the current node is the goal 
         if( currentPtr->index == goalIdx ){
@@ -212,52 +208,29 @@ void JPSPathFinder::JPSGraphSearch(Eigen::Vector3d start_pt, Eigen::Vector3d end
         }
         //get the succetion
         JPSGetSucc(currentPtr, neighborPtrSets, edgeCostSets); //we have done it for you
-        
-        /*
-        *
-        *
-        STEP 4:  For all unexpanded neigbors "m" of node "n", please finish this for loop
-        please write your code below
-        *        
-        */         
+                
         for(int i = 0; i < (int)neighborPtrSets.size(); i++){
-            /*
-            *
-            *
-            Judge if the neigbors have been expanded
-            please write your code below
-            
-            IMPORTANT NOTE!!!
-            neighborPtrSets[i]->id = -1 : unexpanded
-            neighborPtrSets[i]->id = 1 : expanded, equal to this node is in close set
-            *        
-            */
-            if(neighborPtr -> id != 1){ //discover a new node
-                /*
-                *
-                *
-                STEP 6:  As for a new node, do what you need do ,and then put neighbor in open set and record it
-                please write your code below
-                *        
-                */
+            neighborPtr = neighborPtrSets[i];
+
+            if(neighborPtr -> id == 0){ //discover a new node
+                neighborPtr->gScore = edgeCostSets[i] + currentPtr->gScore;
+                neighborPtr->fScore = getHeu(neighborPtr, endPtr) + neighborPtr->gScore;
+                neighborPtr->cameFrom = currentPtr;
+                neighborPtr->id = 1;
+                openSet.insert(make_pair(neighborPtr->fScore, neighborPtr));
                 continue;
             }
-            else if(tentative_gScore <= neighborPtr-> gScore){ //in open set and need update
-                /*
-                *
-                *
-                STEP 7:  As for a node in open set, update it , maintain the openset ,and then put neighbor in open set and record it
-                please write your code below
-                *        
-                */
+            else if(neighborPtr -> id == 1){ //in open set and need update
+                if (neighborPtr->fScore > currentPtr->fScore + edgeCostSets[i]){
+                    neighborPtr->fScore = currentPtr->fScore + edgeCostSets[i];
+                    neighborPtr->gScore = edgeCostSets[i] + currentPtr->gScore;
+                    neighborPtr->cameFrom = currentPtr;
 
-
-                // if change its parents, update the expanding direction 
-                //THIS PART IS ABOUT JPS, you can ignore it when you do your Astar work
-                for(int i = 0; i < 3; i++){
-                    neighborPtr->dir(i) = neighborPtr->index(i) - currentPtr->index(i);
-                    if( neighborPtr->dir(i) != 0)
-                        neighborPtr->dir(i) /= abs( neighborPtr->dir(i) );
+                    for(int i = 0; i < 3; i++){
+                        neighborPtr->dir(i) = neighborPtr->index(i) - currentPtr->index(i);
+                        if( neighborPtr->dir(i) != 0)
+                            neighborPtr->dir(i) /= abs( neighborPtr->dir(i) );
+                    }
                 }
             }      
         }
