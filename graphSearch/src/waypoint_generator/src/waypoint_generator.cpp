@@ -245,10 +245,11 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "waypoint_generator");
     ros::NodeHandle n("~");
     n.param("waypoint_type", waypoint_type, string("manual"));
+    // Subscribe to the end point and other information
     ros::Subscriber sub1 = n.subscribe("odom", 10, odom_callback);
     ros::Subscriber sub2 = n.subscribe("goal", 10, goal_callback);
     ros::Subscriber sub3 = n.subscribe("traj_start_trigger", 10, traj_start_trigger_callback);
-    pub1 = n.advertise<nav_msgs::Path>("waypoints", 50);
+    pub1 = n.advertise<nav_msgs::Path>("waypoints", 50);  // demo_node subscribe
     pub2 = n.advertise<geometry_msgs::PoseArray>("waypoints_vis", 10);
 
     trigged_time = ros::Time(0);

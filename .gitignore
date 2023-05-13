@@ -2,3 +2,7 @@
 /graphSearch/devel/
 /graphSearch/.vscode
 /graphSearch/build
+
+/*/build
+/*/devel
+/*/.vscode

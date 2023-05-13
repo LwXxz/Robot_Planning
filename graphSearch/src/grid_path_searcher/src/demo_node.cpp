@@ -57,6 +57,11 @@ void rcvWaypointsCallback(const nav_msgs::Path & wp)
     if( wp.poses[0].pose.position.z < 0.0 || _has_map == false )
         return;
 
+    // Vector3d start_pt;
+    // start_pt << wp.poses[0].pose.position.x,
+    //             wp.poses[0].pose.position.y,
+    //             wp.poses[0].pose.position.z;
+
     Vector3d target_pt;
     target_pt << wp.poses[0].pose.position.x,
                  wp.poses[0].pose.position.y,
@@ -159,6 +164,7 @@ int main(int argc, char** argv)
     _visited_nodes_vis_pub        = nh.advertise<visualization_msgs::Marker>("visited_nodes_vis",1);
 
     // nh.param(param_name, param_val, default_val);
+    // nh.param() used to get the value, and give the default value
     nh.param("map/cloud_margin",  _cloud_margin, 0.0);
     nh.param("map/resolution",    _resolution,   0.2);
     
@@ -221,7 +227,7 @@ void visGridPath( vector<Vector3d> nodes, bool is_use_jps )
     node_vis.pose.orientation.w = 1.0;
 
     // std_msgs/ColorRGBA color: a r g b
-    if(is_use_jps){
+    if(is_use_jps){             // jps black
         node_vis.color.a = 1.0;
         node_vis.color.r = 0.0;
         node_vis.color.g = 0.0;
