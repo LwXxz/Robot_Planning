@@ -5,4 +5,9 @@
 
 /*/build
 /*/devel
-/*/.vscode
+/*/.vscod
+
+/*/rviz_pluginse/build
+/*/rviz_pluginse/lib
+/*/rviz_pluginse/bin
+
