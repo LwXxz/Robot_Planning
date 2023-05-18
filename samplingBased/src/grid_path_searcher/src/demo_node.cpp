@@ -128,9 +128,7 @@ public:
         // example, so we downcast state into the specific type.
         const ob::RealVectorStateSpace::StateType* state3D =
             state->as<ob::RealVectorStateSpace::StateType>();
-        /**
-        STEP 1: Extract the robot's (x,y,z) position from its state
-        */
+ 
         double x = state3D->values[0];
         double y = state3D->values[1];
         double z = state3D->values[2];
@@ -276,18 +274,18 @@ int main(int argc, char** argv)
 
 void visRRTstarPath(vector<Vector3d> nodes )
 {
-    visualization_msgs::Marker Points, Line; 
-    Points.header.frame_id = Line.header.frame_id = "world";
-    Points.header.stamp    = Line.header.stamp    = ros::Time::now();
-    Points.ns              = Line.ns              = "demo_node/RRTstarPath";
-    Points.action          = Line.action          = visualization_msgs::Marker::ADD;
+    visualization_msgs::Marker Points, Line;
+    Points.header.frame_id = Line.header.frame_id = "world";                   // instance
+    Points.header.stamp    = Line.header.stamp    = ros::Time::now();         // time stamp
+    Points.ns              = Line.ns              = "demo_node/RRTstarPath";  // namespace
+    // Points.action          = Line.action          = visualization_msgs::Marker::ADD;  // add/modify an object
     Points.pose.orientation.w = Line.pose.orientation.w = 1.0;
     Points.id = 0;
     Line.id   = 1;
-    Points.type = visualization_msgs::Marker::POINTS;
+    Points.type = visualization_msgs::Marker::POINTS;       // type of object
     Line.type   = visualization_msgs::Marker::LINE_STRIP;
 
-    Points.scale.x = _resolution/2; 
+    Points.scale.x = _resolution/2;     // Scale of the object 
     Points.scale.y = _resolution/2;
     Line.scale.x   = _resolution/2;
 

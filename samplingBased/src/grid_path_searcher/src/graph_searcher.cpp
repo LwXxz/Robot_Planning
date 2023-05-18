@@ -32,7 +32,7 @@ void RRTstarPreparatory::setObs(const double coord_x, const double coord_y, cons
         coord_x >= gl_xu || coord_y >= gl_yu || coord_z >= gl_zu )
         return;
 
-    int idx_x = int( (coord_x - gl_xl) * inv_resolution);
+    int idx_x = static_cast<int>( (coord_x - gl_xl) * inv_resolution);
     int idx_y = static_cast<int>( (coord_y - gl_yl) * inv_resolution);
     int idx_z = static_cast<int>( (coord_z - gl_zl) * inv_resolution);      
     
