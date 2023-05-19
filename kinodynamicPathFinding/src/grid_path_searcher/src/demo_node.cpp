@@ -186,8 +186,8 @@ void trajectoryLibrary(const Vector3d start_pt, const Vector3d start_velocity, c
             }
         }
     }
-    TraLibrary[a][b][c] -> setOptimal(); // this pos is the optimal.
-    visTraLibrary(TraLibrary);           
+    TraLibrary[a][b][c] -> setOptimal(); // this pos is the optimal trajectory.
+    visTraLibrary(TraLibrary);           // plot the Line and obstacle
     return;
 }
 
@@ -202,6 +202,7 @@ int main(int argc, char** argv)
     _grid_map_vis_pub         = nh.advertise<sensor_msgs::PointCloud2>("grid_map_vis", 1);
     _path_vis_pub             = nh.advertise<visualization_msgs::MarkerArray>("RRTstar_path_vis",1);
 
+    // set the params in the Parameter Server
     nh.param("map/cloud_margin",  _cloud_margin, 0.0);
     nh.param("map/resolution",    _resolution,   0.2);
     
@@ -245,10 +246,11 @@ int main(int argc, char** argv)
 void visTraLibrary(TrajectoryStatePtr *** TraLibrary)
 {
     double _resolution = 0.2;
+    // set the msg type
     visualization_msgs::MarkerArray  LineArray;
     visualization_msgs::Marker       Line;
 
-    Line.header.frame_id = "world";
+    Line.header.frame_id = "world";  // from world coord
     Line.header.stamp    = ros::Time::now();
     Line.ns              = "demo_node/TraLibrary";
     Line.action          = visualization_msgs::Marker::ADD;
@@ -268,23 +270,23 @@ void visTraLibrary(TrajectoryStatePtr *** TraLibrary)
             for(int k = 0; k<= _discretize_step;k++){
                 if(TraLibrary[i][j][k]->collision_check == false){
                     if(TraLibrary[i][j][k]->optimal_flag == true){
-                        Line.color.r         = 0.0;
+                        Line.color.r         = 0.0;     // green
                         Line.color.g         = 1.0;
                         Line.color.b         = 0.0;
                         Line.color.a         = 1.0;
                     }else{
-                        Line.color.r         = 0.0;
+                        Line.color.r         = 0.0;     // blue
                         Line.color.g         = 0.0;
                         Line.color.b         = 1.0;
                         Line.color.a         = 1.0;
                     }
                 }else{
-                    Line.color.r         = 1.0;
+                    Line.color.r         = 1.0;         // red
                     Line.color.g         = 0.0;
                     Line.color.b         = 0.0;
                     Line.color.a         = 1.0;
                 }
-                   Line.points.clear();
+                    Line.points.clear();
                     geometry_msgs::Point pt;
                     Line.id = marker_id;
                     for(int index = 0; index < int(TraLibrary[i][j][k]->Position.size());index++){
@@ -295,6 +297,7 @@ void visTraLibrary(TrajectoryStatePtr *** TraLibrary)
                         Line.points.push_back(pt);
                     }
                     LineArray.markers.push_back(Line);
+                    // before publish, should set the namespace()
                     _path_vis_pub.publish(LineArray);
                     ++marker_id; 
             }

@@ -13,6 +13,7 @@
 <arg name="start_vz" default=" 0.0"/>
 
   <node pkg="grid_path_searcher" type="demo_node" name="demo_node" output="screen" required = "true">
+      <!-- set the params in the Parameter Server -->
       <remap from="~waypoints"       to="/waypoint_generator/waypoints"/>
       <remap from="~map"             to="/random_complex/global_map"/> 
 
