@@ -46,7 +46,7 @@ double _time_interval     = 1.25;
 int    _time_step         = 50;
 
 Homeworktool * _homework_tool     = new Homeworktool();
-TrajectoryStatePtr *** TraLibrary;
+TrajectoryStatePtr *** TraLibrary; // 3D TrajectoryStatePtr, each TrajectoryStatePtr points to TrajectoryState
 
 void rcvWaypointsCallback(const nav_msgs::Path & wp);
 void rcvPointCloudCallBack(const sensor_msgs::PointCloud2 & pointcloud_map);
@@ -67,6 +67,7 @@ void rcvWaypointsCallback(const nav_msgs::Path & wp)
     trajectoryLibrary(_start_pt,_start_velocity,target_pt);
 }
 
+// from rosmsg(pointcloud_map) turn into pcl(cloud), set the obstalces, turn back to the rosmsg(map_vis)
 void rcvPointCloudCallBack(const sensor_msgs::PointCloud2 & pointcloud_map)
 {   
     if(_has_map ) return;
@@ -88,7 +89,7 @@ void rcvPointCloudCallBack(const sensor_msgs::PointCloud2 & pointcloud_map)
         _homework_tool->setObs(pt.x, pt.y, pt.z);
 
         // for visualize only
-        Vector3d cor_round = _homework_tool->coordRounding(Vector3d(pt.x, pt.y, pt.z));
+        Vector3d cor_round = _homework_tool->coordRounding(Vector3d(pt.x, pt.y, pt.z)); // make coord feasible
         pt.x = cor_round(0);
         pt.y = cor_round(1);
         pt.z = cor_round(2);
@@ -146,12 +147,7 @@ void trajectoryLibrary(const Vector3d start_pt, const Vector3d start_velocity, c
                 delta_time = _time_interval / double(_time_step);
                 
                 for(int step=0 ; step<=_time_step ; step ++){
-
-                    /*
-                    STEP 1: finish the forward integration, the modelling has been given in the document
-                    the parameter of forward integration: _max_input_acc|_discretize_step|_time_interval|_time_step   all have been given
-                    use the pos and vel to recored the steps in the trakectory
-                    */
+                    // forward integration
                     pos(0) = pos(0) + vel(0) * delta_time + 0.5*acc_input(0)*pow(delta_time, 2);
                     pos(1) = pos(1) + vel(1) * delta_time + 0.5*acc_input(1)*pow(delta_time, 2);
                     pos(2) = pos(2) + vel(2) * delta_time + 0.5*acc_input(2)*pow(delta_time, 2);
@@ -170,14 +166,7 @@ void trajectoryLibrary(const Vector3d start_pt, const Vector3d start_velocity, c
                         collision = true;
                     }
                 }
-                /*
-                    STEP 2: go to the hw_tool.cpp and finish the function Homeworktool::OptimalBVP
-                    the solving process has been given in the document
 
-                    because the final point of trajectory is the start point of OBVP, so we input the pos,vel to the OBVP
-
-                    after finish Homeworktool::OptimalBVP, the Trajctory_Cost will record the optimal cost of this trajectory
-                */
                 Trajctory_Cost = _homework_tool -> OptimalBVP(pos,vel,target_pt);
 
                 //input the trajetory in the trajectory library
@@ -188,7 +177,7 @@ void trajectoryLibrary(const Vector3d start_pt, const Vector3d start_velocity, c
                     TraLibrary[i][j][k]->setCollisionfree();
                 
                 //record the min_cost in the trajectory Library, and this is the part pf selecting the best trajectory cloest to the planning traget
-                if(Trajctory_Cost<min_Cost && TraLibrary[i][j][k]->collision_check == false){
+                if(Trajctory_Cost < min_Cost && TraLibrary[i][j][k]->collision_check == false){
                     a = i;
                     b = j;
                     c = k;
@@ -197,8 +186,8 @@ void trajectoryLibrary(const Vector3d start_pt, const Vector3d start_velocity, c
             }
         }
     }
-    TraLibrary[a][b][c] -> setOptimal();
-    visTraLibrary(TraLibrary);
+    TraLibrary[a][b][c] -> setOptimal(); // this pos is the optimal.
+    visTraLibrary(TraLibrary);           
     return;
 }
 
