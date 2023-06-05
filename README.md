@@ -1,5 +1,5 @@
 # Robot_Planning
-This is an introductory project about motion planning for mobile robots. The main content includes graph search-based algorithms (A*, jps), sampling-based algorithms (RRT), path planning considering object dynamic constraints, and clsed-form and numerical way to generate trajectories.
+This is an introductory project about motion planning for mobile robots. The main content includes graph search-based algorithms (A*, jps), sampling-based algorithms (RRT, RRT*), path planning considering object dynamic constraints, and clsed-form and numerical way to generate trajectories.
 ### Prerequisities
 - Ubuntu 18.04 with ros-melodic
 - eigen3
