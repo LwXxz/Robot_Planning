@@ -1,0 +1,13 @@
+{
+    "python.analysis.extraPaths": [
+        "/home/cc/rosProject/trajectoryGeneration/devel/lib/python2.7/dist-packages",
+        "/opt/ros/melodic/lib/python2.7/dist-packages"
+    ],
+    "python.autoComplete.extraPaths": [
+        "/home/cc/rosProject/trajectoryGeneration/devel/lib/python2.7/dist-packages",
+        "/opt/ros/melodic/lib/python2.7/dist-packages"
+    ],
+    "files.associations": {
+        "cmath": "cpp"
+    }
+}

@@ -144,7 +144,7 @@ void odom_callback(const nav_msgs::Odometry::ConstPtr& msg) {
 }
 
 void goal_callback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
-    /* if (!is_odom_ready) {
+/*    if (!is_odom_ready) {
         ROS_ERROR("[waypoint_generator] No odom!");
         return;
     }*/

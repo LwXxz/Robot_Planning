@@ -134,7 +134,7 @@ double Homeworktool::OptimalBVP(Eigen::Vector3d _start_position,Eigen::Vector3d 
         0, 1, 0, -coeff[2],
         0, 0, 1, -coeff[3];
 
-    Matrix<complex<double>, Dynamic, Dynamic> eigen_values ;
+    Matrix<complex<double>, Dynamic, Dynamic> eigen_values ;  // The size of the matrix is determined ai runtime.
     eigen_values = C.eigenvalues();
 
     for (int i = 0; i < eigen_values.size(); i++){

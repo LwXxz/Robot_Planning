@@ -5,7 +5,7 @@
 
 /*/build
 /*/devel
-/*/.vscod
+/*/.vscode
 
 /*/src/rviz_plugins/build
 /*/src/rviz_plugins/lib
